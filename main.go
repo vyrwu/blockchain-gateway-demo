@@ -10,7 +10,9 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"slices"
+	"strconv"
 	"strings"
 )
 
@@ -49,16 +51,15 @@ type JSONRPC2Response struct {
 }
 
 type Options struct {
-	GatewayURL       string
-	Port             int
+	TargetURL        string
 	PathSegment      string
 	SupportedMethods []string
 }
 
-func New(optFns ...func(*Options)) (*http.ServeMux, error) {
+func NewReverseProxy(optFns ...func(*Options)) (*http.ServeMux, error) {
 	// TODO: improve config: 1. handle multiple domains, 2. pass from config map
 	opts := &Options{
-		GatewayURL:       "https://polygon-rpc.com/",
+		TargetURL:        "https://polygon-rpc.com/",
 		PathSegment:      "/eth",
 		SupportedMethods: []string{"eth_blockNumber", "eth_getBlockByNumber"},
 	}
@@ -67,7 +68,7 @@ func New(optFns ...func(*Options)) (*http.ServeMux, error) {
 		fn(opts)
 	}
 
-	url, err := url.Parse(opts.GatewayURL)
+	url, err := url.Parse(opts.TargetURL)
 	if err != nil {
 		return nil, err
 	}
@@ -158,13 +159,32 @@ func New(optFns ...func(*Options)) (*http.ServeMux, error) {
 	return mux, nil
 }
 
+func GetenvInt(key string, fallback int) (int, error) {
+	val := os.Getenv("PORT")
+	if val == "" {
+		return fallback, nil
+	}
+
+	i, err := strconv.Atoi(val)
+	if err != nil {
+		return 0, err
+	}
+
+	return i, err
+}
+
 func main() {
-	mux, err := New()
+	port, err := GetenvInt("PORT", 8080)
 	if err != nil {
 		panic(err)
 	}
 
-	addr := ":8080"
+	mux, err := NewReverseProxy()
+	if err != nil {
+		panic(err)
+	}
+
+	addr := fmt.Sprintf(":%v", port)
 	slog.Info(fmt.Sprintf("Server started on %s...", addr))
 	http.ListenAndServe(addr, mux)
 }

@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMain(t *testing.T) {
-	mux, err := New()
+func TestReverseProxy(t *testing.T) {
+	mux, err := NewReverseProxy()
 	if err != nil {
 		panic(err)
 	}
