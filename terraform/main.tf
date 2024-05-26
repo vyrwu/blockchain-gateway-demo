@@ -14,7 +14,7 @@ provider "aws" {
     tags = {
       team        = "platform"
       environment = "test"
-      repo-link   = "https://github.com/vyrwu/polygon-demo"
+      repo-link   = "https://github.com/vyrwu/blockchain-gateway-demo"
       managed-by  = "terraform"
     }
   }

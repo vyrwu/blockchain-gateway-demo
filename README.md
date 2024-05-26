@@ -1,4 +1,4 @@
-# polygon-demo
+# blockchain-gateway-demo
 
 Simple reverse proxy that gives access to a selected number of Ethereum JSON-RPC
 methods. Served by https://polygon-rpc.com/
