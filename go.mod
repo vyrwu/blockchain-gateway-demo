@@ -1,4 +1,4 @@
-module polygon-demo.com
+module blockchain-gateway-demo.com
 
 go 1.22.1
 
